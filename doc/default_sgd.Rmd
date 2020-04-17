@@ -80,8 +80,36 @@ rmse <- data.frame(rbind(t(result_summary[1,,]), t(result_summary[2,,])), train_
 rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
 rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
 ```
+#### WX's part
+#### Step 2.2.2 Parameter Tuning with R1 + R2
 
+```{r}
+source("../lib/cross_validation_r1+r2.R")
+source("../lib/Matrix_Factorization_r1+r2.R")
+f_list <- seq(10, 20, 10)
+l_list <- seq(-2, -1, 1)
+f_l <- expand.grid(f_list, l_list)
+# result_summary_r12 <- array(NA, dim = c(nrow(f_l), 10, 4)) 
+# run_time <- system.time(for(i in 1:nrow(f_l)){
+#     par <- paste("f = ", f_l[i,1], ", lambda = ", 10^f_l[i,2])
+#     cat(par, "\n")
+#     current_result <- cv.function.r12(data[1:5000,], K = 5, f = f_l[i,1], lambda = 10^f_l[i,2])
+#     result_summary_r12[,,i] <- matrix(unlist(current_result), ncol = 10, byrow = T) 
+#     print(result_summary_r12)
+#   
+# })
+# 
+# save(result_summary_r12, file = "../output/rmseR12.Rdata")
+```
 
+Plot the tunned parameters for R1 + R2
+
+```{r}
+load(file = "../output/rmseR12.Rdata")
+rmse <- data.frame(rbind(t(result_summary_r12[1,,]), t(result_summary_r12[2,,])), train_test = rep(c("Train", "Test"), each = 4), par = rep(paste("f = ", f_l[,1], ", lambda = ", 10^f_l[,2]), times = 2)) %>% gather("epoch", "RMSE", -train_test, -par)
+rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
+rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
+```
 
 ### Step 3 Postprocessing with KNN
 After matrix factorization, postporcessing will be performed to improve accuracy.
@@ -161,6 +189,24 @@ p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
 test_rmse_p2 <- p2_result_test['rmse_test']
 cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
 ```
+
+#### WX's part
+#### Step 3.1.2 RMSE for R1+R2
+
+```{r}
+# resultR12 <- gradesc.r12(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
+#                    data = data[1:5000,], train = sub_data_train, test = sub_data_test)
+# 
+# save(resultR12, file = "../output/mat_fac_r12.RData")
+```
+
+```{r, warning=FALSE}
+load(file = "../output/mat_fac_r12.RData")
+pred_rating <- t(resultr12$q) %*% resultr12$p
+rmse_r12 <- RMSE2(sub_data_test,pred_rating)
+cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
+```
+
 
 ####Step 4: evaluation
 
