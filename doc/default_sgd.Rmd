@@ -1,0 +1,183 @@
+---
+title: "Project4_Group1"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+In this project, we are going to ultilize matrix factorization methods for recommender system, aiming to match consumers with most appropriate products. Matrix factorization methods represent both items and users with vectors of factors inferred from item rating patterns. High correspondence between item and user factors leads to a recommendation. 
+
+Our group has been assigned with the following algorithm, regularization and postprocessing:
+
+- factorization algorithm: Stochastic Gradient Descent
+
+- regularization: Penalty of Magnitudes + Bias and Interecepts vs Penalty of Magnitudes + Temporal Dynamics
+
+- postpocessing:KNN
+
+
+### Step 1 Load Data and Train-test Split
+```{r}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+data <- read.csv("../data/ml-latest-small/ratings.csv")
+set.seed(0)
+test_idx <- sample(1:nrow(data), round(nrow(data)/5, 0))
+train_idx <- setdiff(1:nrow(data), test_idx)
+data_train <- data[train_idx,]
+data_test <- data[test_idx,]
+```
+
+###Step 2 Matrix Factorization
+
+
+#### Step 2.1 Algorithm and Regularization
+We perform stochastic gradien descent to do matrix factorization.
+
+```{r}
+U <- length(unique(data$userId))
+I <- length(unique(data$movieId))
+source("../lib/Matrix_Factorization.R")
+```
+
+
+#### Step 2.2 Parameter Tuning
+Here we tune parameters as the dimension of factor and the penalty parameter $\lambda$ by cross-validation.
+
+####Step 2.2.1 Parameter Tuning with only A1:Stochastic Gradient Descent
+
+```{r}
+source("../lib/cross_validation.R")
+f_list <- seq(10, 20, 10)
+l_list <- seq(-2, -1, 1)
+f_l <- expand.grid(f_list, l_list)
+```
+
+####parameter tuning
+
+```{r, eval=FALSE}
+# result_summary <- array(NA, dim = c(nrow(f_l), 10, 4)) 
+# run_time <- system.time(for(i in 1:nrow(f_l)){
+#     par <- paste("f = ", f_l[i,1], ", lambda = ", 10^f_l[i,2])
+#     cat(par, "\n")
+#     current_result <- cv.function(data, K = 5, f = f_l[i,1], lambda = 10^f_l[i,2])
+#     result_summary[,,i] <- matrix(unlist(current_result), ncol = 10, byrow = T) 
+#     print(result_summary)
+#   
+# })
+# 
+# save(result_summary, file = "../output/rmse.Rdata")
+```
+
+
+Plot the tuned parameters for A1: Stochastic Gradient Descent
+
+```{r}
+load("../output/rmse.Rdata")
+rmse <- data.frame(rbind(t(result_summary[1,,]), t(result_summary[2,,])), train_test = rep(c("Train", "Test"), each = 4), par = rep(paste("f = ", f_l[,1], ", lambda = ", 10^f_l[,2]), times = 2)) %>% gather("epoch", "RMSE", -train_test, -par)
+rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
+rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
+```
+
+
+
+### Step 3 Postprocessing with KNN
+After matrix factorization, postporcessing will be performed to improve accuracy.
+
+RMSE Function
+```{r}
+RMSE2 <- function(rating,est_rating){
+  sqrt(mean((rating$rating-est_rating)^2))
+}
+```
+
+KNN Function
+
+```{r}
+vec <- function(x) {
+  
+  return(sqrt(sum(x^2)))
+  
+  }
+
+pred_knn <- function(data_train, data_test, q)
+{
+  
+  norm_q <- apply(q,2,vec)
+  sim <- t(t((t(q) %*% q)/ norm_q) / norm_q)
+  colnames(sim) <- colnames(q)
+  rownames(sim) <- colnames(q)
+  pred_test <- rep(0,nrow(data_test))
+  
+  for (i in 1:nrow(data_test)){
+    user_id <- data_test$userId[i]
+    movie_id <- data_test$movieId[i]
+    train <- data_train[data_train$userId == user_id & data_train$movieId != movie_id,]
+    movie_train <- train$movieId
+    sim_vec <- sim[rownames(sim) == movie_id, colnames(sim) %in% movie_train]
+    movie <- names(sim_vec)[which.max(sim_vec)]
+    pred_test[i] <- train[train$movieId == movie,][3]
+  }
+  
+  pred_test <- as.matrix(unlist(pred_test))
+  rmse_test <- sqrt(mean((data_test$rating-pred_test)^2))
+  return(list(pred_test = pred_test, rmse_test = rmse_test))
+  
+}
+```
+
+
+#### Step 3.1.1 Evaluation RMSE for A1 
+
+
+```{r, warning=FALSE}
+result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
+                   data = data, train = data_train, test = data_test)
+
+save(result, file = "../output/mat_fac.RData")
+
+```
+
+
+```{r}
+#  load(file = "../output/rmse.Rdata")
+#  load(file = "../output/mat_fac.Rdata")
+#  
+#  pred_rating <- t(result$q) %*% result$p
+#  rmse_sgd <- RMSE2(data_test,pred_rating)
+#  cat("The RMSE of A1 model is", rmse_sgd)
+```
+
+
+A1+P2
+
+```{r}
+load(file = "../output/rmse.Rdata")
+load(file = "../output/mat_fac.Rdata")
+q <- result$q
+p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
+test_rmse_p2 <- p2_result_test['rmse_test']
+cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
+```
+
+####Step 4: evaluation
+
+```{r}
+library(ggplot2)
+
+#SGD (5000 rows)
+
+load(file = "../output/mat_fac.RData")
+library(ggplot2)
+
+RMSE <- data.frame(epochs = seq(10, 100, 10), Training_MSE = result$train_RMSE, Test_MSE = result$test_RMSE) %>% gather(key = train_or_test, value = RMSE, -epochs)
+
+RMSE %>% ggplot(aes(x = epochs, y = RMSE,col = train_or_test)) + geom_point() + scale_x_discrete(limits = seq(10, 100, 10)) + xlim(c(0, 100))
+
+```
+
+
+
+
