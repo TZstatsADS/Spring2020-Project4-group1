@@ -93,7 +93,7 @@ f_l <- expand.grid(f_list, l_list)
 # run_time <- system.time(for(i in 1:nrow(f_l)){
 #     par <- paste("f = ", f_l[i,1], ", lambda = ", 10^f_l[i,2])
 #     cat(par, "\n")
-#     current_result <- cv.function.r12(data[1:5000,], K = 5, f = f_l[i,1], lambda = 10^f_l[i,2])
+#     current_result <- cv.function.r12(data, K = 5, f = f_l[i,1], lambda = 10^f_l[i,2])
 #     result_summary_r12[,,i] <- matrix(unlist(current_result), ncol = 10, byrow = T) 
 #     print(result_summary_r12)
 #   
@@ -195,7 +195,7 @@ cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
 
 ```{r}
 # resultR12 <- gradesc.r12(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
-#                    data = data[1:5000,], train = sub_data_train, test = sub_data_test)
+#                    data = data, train = sub_data_train, test = sub_data_test)
 # 
 # save(resultR12, file = "../output/mat_fac_r12.RData")
 ```
