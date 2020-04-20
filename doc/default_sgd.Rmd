@@ -212,7 +212,7 @@ Here is the selected set of hyperparameters for
 ```{r, warning=FALSE}
 load(file = "../output/mat_fac_r12.RData")
 pred_rating <- t(resultr12$q) %*% resultr12$p
-rmse_r12 <- RMSE2(sub_data_test,pred_rating)
+rmse_r12 <- RMSE2(data_test,pred_rating)
 cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 ```
 
