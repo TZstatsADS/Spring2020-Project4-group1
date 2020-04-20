@@ -16,6 +16,8 @@ Our group has been assigned with the following algorithm, regularization and pos
 
 - postpocessing:KNN
 
+We are going to compare the regularization methods and evaluate their results.
+
 
 ### Step 1 Load Data and Train-test Split
 ```{r}
@@ -32,7 +34,6 @@ data_test <- data[test_idx,]
 
 ###Step 2 Matrix Factorization
 
-
 #### Step 2.1 Algorithm and Regularization
 We perform stochastic gradien descent to do matrix factorization.
 
@@ -44,9 +45,9 @@ source("../lib/Matrix_Factorization.R")
 
 
 #### Step 2.2 Parameter Tuning
-Here we tune parameters as the dimension of factor and the penalty parameter $\lambda$ by cross-validation.
+Here we use cross validation to tune parameters as the dimension of factor and the penalty parameter $\lambda$.
 
-####Step 2.2.1 Parameter Tuning with only A1:Stochastic Gradient Descent
+####Step 2.2.1 Parameter Tuning with only A1:Stochastic Gradient Descent 
 
 ```{r}
 source("../lib/cross_validation.R")
@@ -55,7 +56,6 @@ l_list <- seq(-2, -1, 1)
 f_l <- expand.grid(f_list, l_list)
 ```
 
-####parameter tuning
 
 ```{r, eval=FALSE}
 # result_summary <- array(NA, dim = c(nrow(f_l), 10, 4)) 
@@ -80,6 +80,10 @@ rmse <- data.frame(rbind(t(result_summary[1,,]), t(result_summary[2,,])), train_
 rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
 rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
 ```
+
+From the graphs, we can observe that the f = 10. lambda = 0.1 maintain the best performance matrics with lowest test RMSE.
+
+
 #### WX's part
 #### Step 2.2.2 Parameter Tuning with R1 + R2
 
@@ -103,7 +107,7 @@ f_l <- expand.grid(f_list, l_list)
 # save(result_summary_r12, file = "../output/rmseR12.Rdata")
 ```
 
-Plot the tunned parameters for R1 + R2
+####Plot the tunned parameters for R1 + R2
 
 ```{r}
 load(file = "../output/rmseR12.Rdata")
@@ -111,6 +115,9 @@ rmse <- data.frame(rbind(t(result_summary_r12[1,,]), t(result_summary_r12[2,,]))
 rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
 rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
 ```
+
+From the graphs, we can observe that the f = ??. lambda = ?? maintain the best performance matrics with lowest test RMSE.
+
 
 ### Step 3 Postprocessing with KNN
 After matrix factorization, postporcessing will be performed to improve accuracy.
@@ -160,7 +167,6 @@ pred_knn <- function(data_train, data_test, q)
 
 #### Step 3.1.1 Evaluation RMSE for A1 
 
-
 ```{r, warning=FALSE}
 result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
                    data = data, train = data_train, test = data_test)
@@ -180,7 +186,7 @@ save(result, file = "../output/mat_fac.RData")
 ```
 
 
-A1+P2
+Here is the slelected parameter for A1+P2
 
 ```{r}
 load(file = "../output/rmse.Rdata")
@@ -201,6 +207,8 @@ cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
 # save(resultR12, file = "../output/mat_fac_r12.RData")
 ```
 
+
+Here is the selected set of hyperparameters for 
 ```{r, warning=FALSE}
 load(file = "../output/mat_fac_r12.RData")
 pred_rating <- t(resultr12$q) %*% resultr12$p
@@ -211,10 +219,10 @@ cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 
 ####Step 4: evaluation
 
+Here we visualize training and testing RMSE by different dimension of factors and epochs
+
 ```{r}
 library(ggplot2)
-
-#SGD (5000 rows)
 
 load(file = "../output/mat_fac.RData")
 library(ggplot2)
@@ -226,5 +234,18 @@ RMSE %>% ggplot(aes(x = epochs, y = RMSE,col = train_or_test)) + geom_point() + 
 ```
 
 
+####Result Summary
 
+Test RMSE for A1 + P2 : 1.16406
+
+Test RMSE for A1 + R1R2 + P2 : 
+
+Test RMSE for A1 + R3 + P2 :  
+
+And the best parameters for all models is F = 10, lambda = 0.1 .
+
+After comparing all the results, we find  has the best performance.
+
+###Step 5 Further Discussion
+####In order to maintain the 
 
