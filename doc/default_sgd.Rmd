@@ -1,5 +1,5 @@
 ---
-title: "Project4_Group1"
+title: "Project4_Group1_Spring2020"
 output:
   html_document:
     df_print: paged
@@ -14,7 +14,7 @@ Our group has been assigned with the following algorithm, regularization and pos
 
 - regularization: Penalty of Magnitudes + Bias and Interecepts vs Penalty of Magnitudes + Temporal Dynamics
 
-- postpocessing:KNN
+- postpocessing: KNN
 
 We are going to compare the regularization methods and evaluate their results.
 
@@ -51,7 +51,7 @@ source("../lib/Matrix_Factorization.R")
 
 
 #### Step 2.2 Parameter Tuning
-Here we use cross validation to tune parameters as the dimension of factor and the penalty parameter $\lambda$.
+Here we use cross validation to tune parameters: f as the dimension of factor and the penalty parameter $\lambda$ and select the best combination with the lowest test RMSE.
 
 ####Step 2.2.1 Parameter Tuning with only A1:Stochastic Gradient Descent 
 
@@ -125,53 +125,6 @@ rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + fac
 
 From the graphs, we can observe that the f = ??. lambda = ?? maintain the best performance matrics with lowest test RMSE.
 
-
-### Step 3 Postprocessing with KNN
-After matrix factorization, postporcessing will be performed to improve accuracy.
-
-RMSE Function
-```{r}
-RMSE2 <- function(rating,est_rating){
-  sqrt(mean((rating$rating-est_rating)^2))
-}
-```
-
-KNN Function
-
-```{r}
-vec <- function(x) {
-  
-  return(sqrt(sum(x^2)))
-  
-  }
-
-pred_knn <- function(data_train, data_test, q)
-{
-  
-  norm_q <- apply(q,2,vec)
-  sim <- t(t((t(q) %*% q)/ norm_q) / norm_q)
-  colnames(sim) <- colnames(q)
-  rownames(sim) <- colnames(q)
-  pred_test <- rep(0,nrow(data_test))
-  
-  for (i in 1:nrow(data_test)){
-    user_id <- data_test$userId[i]
-    movie_id <- data_test$movieId[i]
-    train <- data_train[data_train$userId == user_id & data_train$movieId != movie_id,]
-    movie_train <- train$movieId
-    sim_vec <- sim[rownames(sim) == movie_id, colnames(sim) %in% movie_train]
-    movie <- names(sim_vec)[which.max(sim_vec)]
-    pred_test[i] <- train[train$movieId == movie,][3]
-  }
-  
-  pred_test <- as.matrix(unlist(pred_test))
-  rmse_test <- sqrt(mean((data_test$rating-pred_test)^2))
-  return(list(pred_test = pred_test, rmse_test = rmse_test))
-  
-}
-```
-
-
 #### Step 3.1.1 Evaluation RMSE for A1 
 
 ```{r, warning=FALSE}
@@ -179,7 +132,6 @@ result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.de
                    data = data, train = data_train, test = data_test)
 
 save(result, file = "../output/mat_fac.RData")
-
 ```
 
 
@@ -241,7 +193,85 @@ cat("The RMSE of A1 and R3 model is", rmse_r3)
 ```
 
 
-####Step 4: evaluation
+
+### Step 3 Postprocessing with KNN
+After matrix factorization, postporcessing will be performed to improve accuracy.
+
+RMSE Function
+```{r}
+RMSE2 <- function(rating,est_rating){
+  sqrt(mean((rating$rating-est_rating)^2))
+}
+```
+
+KNN Function
+
+```{r}
+vec <- function(x) {
+  
+  return(sqrt(sum(x^2)))
+  
+  }
+
+pred_knn <- function(data_train, data_test, q)
+{
+  
+  norm_q <- apply(q,2,vec)
+  sim <- t(t((t(q) %*% q)/ norm_q) / norm_q)
+  colnames(sim) <- colnames(q)
+  rownames(sim) <- colnames(q)
+  pred_test <- rep(0,nrow(data_test))
+  
+  for (i in 1:nrow(data_test)){
+    user_id <- data_test$userId[i]
+    movie_id <- data_test$movieId[i]
+    train <- data_train[data_train$userId == user_id & data_train$movieId != movie_id,]
+    movie_train <- train$movieId
+    sim_vec <- sim[rownames(sim) == movie_id, colnames(sim) %in% movie_train]
+    movie <- names(sim_vec)[which.max(sim_vec)]
+    pred_test[i] <- train[train$movieId == movie,][3]
+  }
+  
+  pred_test <- as.matrix(unlist(pred_test))
+  rmse_test <- sqrt(mean((data_test$rating-pred_test)^2))
+  return(list(pred_test = pred_test, rmse_test = rmse_test))
+  
+}
+```
+
+###Step 3.3.2 RMSE for A1+R1+R3+P2
+
+###RMSE for A1+P2
+```{r}
+q <- result$q
+p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
+test_rmse_p2 <- p2_result_test['rmse_test']
+cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
+```
+
+
+###RMSE for A1+R1+R3+P2
+```{r}
+q <- result_R1R3$q
+p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
+test_rmse_p2 <- p2_result_test['rmse_test']
+cat("The RMSE of A1 and R1+R3 with P2 model is", as.numeric(test_rmse_p2))
+```
+
+
+
+####Linear Regression
+
+
+####Linear Regression for A1+R1+R2+P2
+
+
+
+###Linear Regression for A1+R1+R2+P2
+
+
+
+###Step 4: evaluation
 
 Here we visualize training and testing RMSE by different dimension of factors and epochs
 
@@ -260,14 +290,21 @@ RMSE %>% ggplot(aes(x = epochs, y = RMSE,col = train_or_test)) + geom_point() + 
 
 ####Result Summary
 
+Train RMSE for A1 + P2:
 Test RMSE for A1 + P2 : 1.16406
 
+Train RMSE for A1 + R1R2 + P2 :
 Test RMSE for A1 + R1R2 + P2 : 
 
-Test RMSE for A1 + R1R3 + P2 :  1.317491
+Train RMSE for A1 + R1R3 + P2 :
+Test RMSE for A1 + R1R3 + P2 : 1.317491
+
+Linear regression results:
+
+Train RMSE:
+Test RMSE:
 
 And the best parameters for all models is F = 10, lambda = 0.1 .
-
 After comparing all the results, we find  has the best performance.
 
 ###Step 5 Further Discussion
