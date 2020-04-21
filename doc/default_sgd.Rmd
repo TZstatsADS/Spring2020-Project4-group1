@@ -96,6 +96,7 @@ From the graphs, we can observe that the f = 10. lambda = 0.1 maintain the best 
 ```{r}
 source("../lib/cross_validation_r1+r2.R")
 source("../lib/Matrix_Factorization_r1+r2.R")
+source("../lib/Matrix_Factorization_r1r3.R")
 f_list <- seq(10, 20, 10)
 l_list <- seq(-2, -1, 1)
 f_l <- expand.grid(f_list, l_list)
