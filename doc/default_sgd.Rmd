@@ -25,6 +25,12 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 data <- read.csv("../data/ml-latest-small/ratings.csv")
+
+# did transformation on data for getting information in temporal dynamic
+mean_time <- data%>%group_by(userId)%>%summarize(mean_time = mean(timestamp))
+newdata <- left_join(data, mean_time, by="userId")
+data <- newdata%>%mutate(sign = sign(timestamp-mean_time),diff_time = (abs(timestamp-mean_time)))
+
 set.seed(0)
 test_idx <- sample(1:nrow(data), round(nrow(data)/5, 0))
 train_idx <- setdiff(1:nrow(data), test_idx)
@@ -216,6 +222,23 @@ rmse_r12 <- RMSE2(data_test,pred_rating)
 cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 ```
 
+#### Step 3.1.3 RMSE for A1 + R1R3 + P2
+
+```{r}
+# result_R1R3 <- gradesc.r3(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
+#                    data = data[1:5000,], train = sub_data_train, test = sub_data_test)
+# 
+# save(result_R1R3, file = "../output/result_R1R3.RData")
+```
+
+```{r, warning=FALSE}
+load(file = "../output/result_R1R3.RData")
+
+pred_rating <- t(result_R1R3$q) %*% result_R1R3$p
+rmse_r3 <- RMSE2(sub_data_test,pred_rating)
+cat("The RMSE of A1 and R3 model is", rmse_r3)
+```
+
 
 ####Step 4: evaluation
 
@@ -240,7 +263,7 @@ Test RMSE for A1 + P2 : 1.16406
 
 Test RMSE for A1 + R1R2 + P2 : 
 
-Test RMSE for A1 + R3 + P2 :  
+Test RMSE for A1 + R1R3 + P2 :  1.317491
 
 And the best parameters for all models is F = 10, lambda = 0.1 .
 
