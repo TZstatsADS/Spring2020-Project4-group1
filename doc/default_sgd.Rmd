@@ -293,8 +293,8 @@ RMSE %>% ggplot(aes(x = epochs, y = RMSE,col = train_or_test)) + geom_point() + 
 Train RMSE for A1 + P2:
 Test RMSE for A1 + P2 : 1.16406
 
-Train RMSE for A1 + R1R2 + P2 :
-Test RMSE for A1 + R1R2 + P2 : 
+Train RMSE for A1 + R1R2 + P2 :3.648024
+Test RMSE for A1 + R1R2 + P2 : 3.660152
 
 Train RMSE for A1 + R1R3 + P2 :
 Test RMSE for A1 + R1R3 + P2 : 1.317491
