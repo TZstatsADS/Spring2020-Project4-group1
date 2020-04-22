@@ -22,7 +22,7 @@ Matrix factorization usually possess three parts. Our group has been assigned wi
 
 - postpocessing: Singular value decomposition with K-nearest neighbor
 
-We are going to compare the regularization methods given stochastic Gradien descent factorization algorithm and KNN post processing. Then evaluate their results.
+We are going to compare the regularization methods given stochastic Gradien descent factorization algorithm and KNN post processing. Finally, we will combine the prediction through the linear regression process.
 
 	
 **Contribution statement**: [default] 
