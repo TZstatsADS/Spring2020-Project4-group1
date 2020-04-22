@@ -5,14 +5,14 @@
 Term: Spring 2020
 
 + Team 1
-+ Projec title: Recommender System
++ Projec title: Algorithm implementation and evaluation: Collaborative Filtering
 + Team members
 	+ Chen, Shenghan
 	+ Chen, Shuyi
 	+ Guo, Junyan 
 	+ Heagy, David 
 	+ Xie, Wenjie 
-+ Project summary: In this project, we are going to ultilize matrix factorization methods for recommender system, aiming to match consumers with most appropriate products. Matrix factorization methods represent both items and users with vectors of factors inferred from item rating patterns. High correspondence between item and user factors leads to a recommendation. 
++ Project summary: In this project, we are going to ultilize matrix factorization methods for recommender system on the Netflix movies and ratings data, aiming to match consumers with most appropriate products. Matrix factorization methods represent both items and users with vectors of factors inferred from item rating patterns. High correspondence between item and user factors leads to a recommendation. 
 
 Our group has been assigned with the following algorithm, regularization and postprocessing:
 
