@@ -24,6 +24,8 @@ Matrix factorization usually possess three parts. Our group has been assigned wi
 
 We are going to compare the regularization methods given stochastic Gradien descent factorization algorithm and KNN post processing. Finally, we will combine the prediction through the linear regression process.
 
+**Result**:
+![image](figs/result.png)
 	
 **Contribution statement**: [default] 
 All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
