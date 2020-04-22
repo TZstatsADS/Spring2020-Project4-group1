@@ -18,12 +18,15 @@ Our group has been assigned with the following algorithm, regularization and pos
 
 We are going to compare the regularization methods and evaluate their results.
 
-
-### Step 1 Load Data and Train-test Split
-```{r}
+```{r include=FALSE}
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+```
+
+
+### Step 1 Load Data and Train-test Split
+```{r}
 data <- read.csv("../data/ml-latest-small/ratings.csv")
 
 # did transformation on data for getting information in temporal dynamic
@@ -127,6 +130,14 @@ From the graphs, we can observe that the f = ??. lambda = ?? maintain the best p
 
 #### Step 2.1.1 Evaluation RMSE for A1 
 
+RMSE Function
+```{r}
+RMSE2 <- function(rating,est_rating){
+  sqrt(mean((rating$rating-est_rating)^2))
+}
+```
+
+
 ```{r, warning=FALSE}
 #result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, #stopping.deriv = 0.01,
 #                   data = data, train = data_train, test = data_test)
@@ -178,8 +189,8 @@ cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 #### Step 2.1.3 RMSE for A1 + R1R3 + P2
 
 ```{r}
-# result_R1R3 <- gradesc.r3(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
-#                    data = data[1:5000,], train = sub_data_train, test = sub_data_test)
+# result_R1R3 <- gradesc.r3(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 30, stopping.deriv = 0.01,
+#                    data = data, train = data_train, test = data_test)
 # 
 # save(result_R1R3, file = "../output/result_R1R3.RData")
 ```
@@ -187,22 +198,53 @@ cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 ```{r, warning=FALSE}
 load(file = "../output/result_R1R3.RData")
 
-pred_rating <- t(result_R1R3$q) %*% result_R1R3$p
-rmse_r3 <- RMSE2(sub_data_test,pred_rating)
-cat("The RMSE of A1 and R3 model is", rmse_r3)
+# load results from matrix factorization
+pred_rating13 <- t(result_R1R3$q) %*% result_R1R3$p
+alpha <- result_R1R3$alpha
+
+# compute all metrics needed for ratings
+mu <- mean(data_train$rating)
+bi <- data_train%>%group_by(movieId)%>%summarize(bi = mean(rating)-mu)%>%arrange(movieId)
+bu <- data_train%>%group_by(userId)%>%summarize(bu = mean(rating)-mu)%>%arrange(userId)
+dev_u_t_train <- data_train[,6]*(data_train[,7]^0.01)
+dev_u_t_test <- data_test[,6]*(data_test[,7]^0.01)
+bi_train <- c()
+bi_test <- c()
+bu_train <- c()
+bu_test <- c()
+data_train_pred <- c()
+dev_train <-c()
+
+for(i in 1:nrow(data_train)){
+  data_train_pred[i]<-pred_rating13[which(rownames(pred_rating13)==data_train$movieId[i]),which(colnames(pred_rating13)==data_train$userId[i])]
+  dev_train[i] <- alpha[which(names(alpha)==data_train$userId[i])]*dev_u_t_train[i]
+  bi_train[i] <- bi$bi[which(bi$movieId==data_train$movieId[i])]
+  bu_train [i] <- bu$bu[which(bu$userId==data_train$userId[i])]
+}
+# the function of gettting predicted ratings for training set
+pred_train_new <- data_train_pred+bi_train+bu_train+mu+dev_train
+
+data_test_pred <- c()
+dev_test <-c()
+for(i in 1:nrow(data_test)){
+  data_test_pred[i]<-pred_rating13[which(rownames(pred_rating13)==data_test$movieId[i]),which(colnames(pred_rating13)==data_test$userId[i])]
+  dev_test[i] <- alpha[which(names(alpha)==data_test$userId[i])]*dev_u_t_test[i]
+  bi_test[i] <- ifelse(length(bi$bi[which(bi$movieId==data_test$movieId[i])])==0,0,bi$bi[which(bi$movieId==data_test$movieId[i])])
+  bu_test [i] <- ifelse(length(bu$bu[which(bu$userId==data_test$userId[i])])==0,0,bu$bu[which(bu$userId==data_test$userId[i])])
+}
+# the function of gettting predicted ratings for test set
+pred_test_new <- data_test_pred+bi_test+bu_test+mu+dev_test
+
+rmse_r3_train <- RMSE2(data_train,pred_train_new)
+rmse_r3_test <- RMSE2(data_test,pred_test_new)
+cat("The test RMSE of A1 with R1 and R3  model is", rmse_r3_test,"\n")
+cat("The training RMSE of A1 with R1 and R3  model is", rmse_r3_train)
 ```
 
 
 
 ### Step 3 Postprocessing with KNN
 After matrix factorization, postporcessing will be performed to improve accuracy.
-
-RMSE Function
-```{r}
-RMSE2 <- function(rating,est_rating){
-  sqrt(mean((rating$rating-est_rating)^2))
-}
-```
 
 KNN Function
 
@@ -253,9 +295,12 @@ cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
 ###RMSE for A1+R1+R3+P2
 ```{r}
 q <- result_R1R3$q
-p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
-test_rmse_p2 <- p2_result_test['rmse_test']
-cat("The RMSE of A1 and R1+R3 with P2 model is", as.numeric(test_rmse_p2))
+p2_result_test13 <- pred_knn(data_train = data_train, data_test = data_test, q)
+test_rmse_p2 <- p2_result_test13['rmse_test']
+p2_result_train13 <- pred_knn(data_train = data_train, data_test = data_train, q)
+train_rmse_p2 <- p2_result_train13['rmse_test']
+cat("The test RMSE of A1 and R1+R3 with P2 model is", as.numeric(test_rmse_p2),"\n")
+cat("The training RMSE of A1 and R1+R3 with P2 model is", as.numeric(train_rmse_p2))
 ```
 
 
@@ -268,7 +313,34 @@ cat("The RMSE of A1 and R1+R3 with P2 model is", as.numeric(test_rmse_p2))
 
 
 ###Linear Regression for A1+R1+R2+P2
+```{r}
+knn <- p2_result_test13$pred_test
+t_test <- tibble(knn = p2_result_test13$pred_test,
+                 bi = bi_test,
+                 bu = bu_test,
+                 qp = data_test_pred,
+                 dev = dev_test)
+t_train <- tibble(y = data_train$rating,
+                  knn = p2_result_train13$pred_test,
+                  bi = bi_train,
+                  bu = bu_train,
+                  qp = data_train_pred,
+                  dev = dev_train)
+lm13 <- lm(y-mu~.,data=t_train)
+summary(lm13)
+```
 
+```{r}
+pred_new <- predict(lm13,t_test)
+true_vec <- data_test$rating-mu
+error_l13 <- sqrt(mean((true_vec - pred_new)^2))
+error_l13 <- cat("The test RMSE of A1 and R1+R3 with P2 linear model is", as.numeric(error_l13),"\n")
+
+pred_new <- predict(lm13,t_train%>%select(-y))
+true_vec <- t_train$y - mu
+error_l13 <- sqrt(mean((true_vec - pred_new)^2))
+error_l13 <- cat("The training RMSE of A1 and R1+R3 with P2 linear model is", as.numeric(error_l13))
+```
 
 
 ###Step 4: evaluation
@@ -296,20 +368,21 @@ Test RMSE for A1 + P2 : 1.16406
 Train RMSE for A1 + R1R2 + P2 :3.648024
 Test RMSE for A1 + R1R2 + P2 : 3.660152
 
-Train RMSE for A1 + R1R3 + P2 :
-Test RMSE for A1 + R1R3 + P2 : 1.317491
+Train RMSE for A1 + R1R3 (combination): 0.7388929
+Test RMSE for A1 + R1R3 (combination): 0.9196861 
+
+Train RMSE for A1 + R1R3 +P2: 1.277137
+Test RMSE for A1 + R1R3 +P2: 1.317491 
 
 Linear regression results:
 
-Linear regression Train RMSE for A1 + R1R2 + P2 :
+Linear regression Train RMSE for A1 + R1R2 + P2 : 
 Linear regression Test RMSE for A1 + R1R2 + P2 :
 
-Linear regression Train RMSE for A1 + R1R3 + P2 :
-Linear regression Test RMSE for A1 + R1R3 + P2 : 1.317491
+Linear regression Train RMSE for A1 + R1R3 + P2 : 0.7200523
+Linear regression Test RMSE for A1 + R1R3 + P2 : 0.934901
 
 And the best parameters for all models is F = 10, lambda = 0.1 .
 After comparing all the results, we find  has the best performance.
 
-###Step 5 Further Discussion
-####In order to maintain the 
 
