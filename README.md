@@ -40,7 +40,7 @@ All team members contributed equally in all stages of this project. All team mem
 
 + Guo, Junyan: He conducted meetings, taking charge on R1+R3 factorization file, knn method and linear regression method. He did data transformation (mu, bi, bu, dev_u(t)) for fitting data in all methods. 
 
-+ Chen, Shuyi: She participated in meetings, . 
++ Chen, Shuyi: She participated in meetings, She took charge of the A1+P2 model, wrote the report and PPT and did the presentation.
 
 + Heagy, David: He participated in meetings, implemented R1+R3 algorithm with Junyan Guo, debuged R1+R3 algorithm, and ran the R1+R2 algorithm on the whole dataset providing Rdata result. 
 
