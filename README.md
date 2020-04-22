@@ -5,7 +5,7 @@
 Term: Spring 2020
 
 + Team 1
-+ Projec title: Algorithm implementation and evaluation: Collaborative Filtering
++ Project title: Algorithm implementation and evaluation: Collaborative Filtering
 + Team members
 	+ Chen, Shenghan
 	+ Chen, Shuyi
@@ -14,7 +14,7 @@ Term: Spring 2020
 	+ Xie, Wenjie 
 + Project summary: In this project, we are going to ultilize matrix factorization methods for recommender system on the Netflix movies and ratings data, aiming to match consumers with most appropriate products. Matrix factorization methods represent both items and users with vectors of factors inferred from item rating patterns. High correspondence between item and user factors leads to a recommendation. 
 
-Our group has been assigned with the following algorithm, regularization and postprocessing:
+Matrix factorization usually possess three parts. Our group has been assigned with the following algorithm, regularization and postprocessing:
 
 - factorization algorithm: Stochastic Gradient Descent
 
