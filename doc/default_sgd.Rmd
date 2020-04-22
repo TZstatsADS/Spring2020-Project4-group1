@@ -288,7 +288,10 @@ pred_knn <- function(data_train, data_test, q)
 q <- result$q
 p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
 test_rmse_p2 <- p2_result_test['rmse_test']
+p2_result_train <- pred_knn(data_train = data_train, data_test = data_train, q)
+train_rmse_p2 <- p2_result_train['rmse_test']
 cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
+cat("The train RMSE of A1 with P2 model is", as.numeric(train_rmse_p2),"\n")
 ```
 
 
@@ -362,7 +365,7 @@ RMSE %>% ggplot(aes(x = epochs, y = RMSE,col = train_or_test)) + geom_point() + 
 
 ####Result Summary
 
-Train RMSE for A1 + P2:
+Train RMSE for A1 + P2: 1.011
 Test RMSE for A1 + P2 : 1.16406
 
 Train RMSE for A1 + R1R2 + P2 :3.648024
