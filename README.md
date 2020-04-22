@@ -4,17 +4,29 @@
 
 Term: Spring 2020
 
-+ Team #
-+ Projec title: Lorem ipsum dolor sit amet
++ Team 1
++ Projec title: Recommender System
 + Team members
-	+ team member 1
-	+ team member 2
-	+ team member 3
-	+ team member 4
-	+ team member 5
-+ Project summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	+ Chen, Shenghan
+	+ Chen, Shuyi
+	+ Guo, Junyan 
+	+ Heagy, David 
+	+ Xie, Wenjie 
++ Project summary: In this project, we are going to ultilize matrix factorization methods for recommender system, aiming to match consumers with most appropriate products. Matrix factorization methods represent both items and users with vectors of factors inferred from item rating patterns. High correspondence between item and user factors leads to a recommendation. 
+
+Our group has been assigned with the following algorithm, regularization and postprocessing:
+
+- factorization algorithm: Stochastic Gradient Descent
+
+- regularization: Penalty of Magnitudes + Bias and Interecepts vs Penalty of Magnitudes + Temporal Dynamics
+
+- postpocessing: Singular value decomposition with K-nearest neighbor
+
+We are going to compare the regularization methods given stochastic Gradien descent factorization algorithm and KNN post processing. Then evaluate their results.
+
 	
-**Contribution statement**: [default] All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
+**Contribution statement**: [default] 
+All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
