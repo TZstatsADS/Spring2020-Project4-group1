@@ -294,7 +294,7 @@ p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
 test_rmse_p2 <- p2_result_test['rmse_test']
 p2_result_train <- pred_knn(data_train = data_train, data_test = data_train, q)
 train_rmse_p2 <- p2_result_train['rmse_test']
-cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
+cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2),"\n")
 cat("The train RMSE of A1 with P2 model is", as.numeric(train_rmse_p2),"\n")
 ```
 
@@ -388,31 +388,6 @@ error_l13 <- cat("The training RMSE of A1 and R1+R3 with P2 linear model is", as
 
 ###Step 4: Result summary and evaluation
 ####Result Summary
-
-
-Train RMSE for A1 + P2: 1.01
-Test RMSE for A1 + P2 : 1.16
-
-Train RMSE for A1 + R1R2: 3.64
-Test RMSE for A1 + R1R2: 3.70
-
-Train RMSE for A1 + R1R2 +P2: 1.27
-Test RMSE for A1 + R1R2 + P2 : 1.15
-
-Train RMSE for A1 + R1R3 (combination): 0.73
-Test RMSE for A1 + R1R3 (combination): 0.91 
-
-Train RMSE for A1 + R1R3 +P2: 1.28
-Test RMSE for A1 + R1R3 +P2: 1.32
-
-
-Linear regression results:
-
-Linear regression Train RMSE for A1 + R1R2 + P2 : 0.74
-Linear regression Test RMSE for A1 + R1R2 + P2 :  0.85
-
-Linear regression Train RMSE for A1 + R1R3 + P2 : 0.72
-Linear regression Test RMSE for A1 + R1R3 + P2 : 0.93
 
 
 
