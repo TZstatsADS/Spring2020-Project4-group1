@@ -26,19 +26,27 @@ We are going to compare the regularization methods given stochastic Gradien desc
 
 **Result**:
 ![image](figs/result.png)
+The best parameters for all models is F = 10, lambda = 0.1 .
+
+As seen in the RMSE table, we observe that the RMSEs for A1+R1+R2+P2  for both train and test are larger than the RMSEs for A1+R1+R3+P2.
+
+After the linear regression, we observe that the RMSEs for A1+R1+R2+P2 perform better than A1+R1+R3+P2  for both train and test. 
+
+In conclusion, the best RMSEs after regularizations for both train and test come from the A1+R1+R2+P2. 
+
 	
 **Contribution statement**: [default] 
 All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
-+ Guo, Junyan: He 
++ Guo, Junyan: He conducted meetings, taking charge on R1+R3 factorization file, knn method and linear regression method. He did data transformation (mu, bi, bu, dev_u(t)) for fitting data in all methods. 
 
-+ Chen, Shuyi: 
++ Chen, Shuyi: She . 
 
-+ Heagy, David  He . 
++ Heagy, David: He participated in meetings, implemented R1+R3 algorithm with Junyan Guo, debuged R1+R3 algorithm, and ran the R1+R2 algorithm on the whole dataset providing Rdata result. 
 
-+ Xie, Wenjie: She is responsible for the R1+R2+P2 part
++ Xie, Wenjie: She implemented R1+R2 algorithm, carried knn, linear regression method on R1+R2 regularized data.  
 
-+ Chen, Shenghan: She . 
++ Chen, Shenghan: She implemented R1+R2 algorithm with Wenjie Xie. 
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
