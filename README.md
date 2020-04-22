@@ -30,13 +30,13 @@ We are going to compare the regularization methods given stochastic Gradien desc
 **Contribution statement**: [default] 
 All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
-+ Guo, Junyan: He . 
++ Guo, Junyan: He 
 
-+ Chen, Shuyi: She . 
++ Chen, Shuyi: 
 
 + Heagy, David  He . 
 
-+ Xie, Wenjie: She .  
++ Xie, Wenjie: She is responsible for the R1+R2+P2 part
 
 + Chen, Shenghan: She . 
 
