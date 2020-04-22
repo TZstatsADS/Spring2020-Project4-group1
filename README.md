@@ -38,7 +38,7 @@ In conclusion, the best RMSEs after regularizations for both train and test come
 **Contribution statement**: [default] 
 All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
-+ Guo, Junyan: He conducted meetings, taking charge on R1+R3 factorization file, knn method and linear regression method. He did data transformation (mu, bi, bu, dev_u(t)) for fitting data in all methods. 
++ Guo, Junyan: He conducted meetings, taking charge on R1+R3 factorization file, knn method and linear regression method. He did data transformation (mu, bi, bu, dev_u(t)) for fitting data in all methods and debugged the main file. 
 
 + Chen, Shuyi: She participated in meetings, She took charge of the A1+P2 model, wrote the report and PPT and did the presentation.
 
