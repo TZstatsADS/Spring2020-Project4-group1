@@ -117,21 +117,21 @@ f_l <- expand.grid(f_list, l_list)
 ####Plot the tunned parameters for R1 + R2
 
 ```{r}
-load(file = "../output/rmseR12.Rdata")
-rmse <- data.frame(rbind(t(result_summary_r12[1,,]), t(result_summary_r12[2,,])), train_test = rep(c("Train", "Test"), each = 4), par = rep(paste("f = ", f_l[,1], ", lambda = ", 10^f_l[,2]), times = 2)) %>% gather("epoch", "RMSE", -train_test, -par)
-rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
-rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
+# load(file = "../output/rmseR12.Rdata")
+# rmse <- data.frame(rbind(t(result_summary_r12[1,,]), t(result_summary_r12[2,,])), train_test = rep(c("Train", "Test"), each = 4), par = rep(paste("f = ", f_l[,1], ", lambda = ", 10^f_l[,2]), times = 2)) %>% gather("epoch", "RMSE", -train_test, -par)
+# rmse$epoch <- as.numeric(gsub("X", "", rmse$epoch))
+# rmse %>% ggplot(aes(x = epoch, y = RMSE, col = train_test)) + geom_point() + facet_grid(~par)
 ```
 
 From the graphs, we can observe that the f = ??. lambda = ?? maintain the best performance matrics with lowest test RMSE.
 
-#### Step 3.1.1 Evaluation RMSE for A1 
+#### Step 2.1.1 Evaluation RMSE for A1 
 
 ```{r, warning=FALSE}
-result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
-                   data = data, train = data_train, test = data_test)
+#result <- gradesc(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, #stopping.deriv = 0.01,
+#                   data = data, train = data_train, test = data_test)
 
-save(result, file = "../output/mat_fac.RData")
+#save(result, file = "../output/mat_fac.RData")
 ```
 
 
@@ -153,17 +153,17 @@ load(file = "../output/mat_fac.Rdata")
 q <- result$q
 p2_result_test <- pred_knn(data_train = data_train, data_test = data_test, q)
 test_rmse_p2 <- p2_result_test['rmse_test']
-cat("The RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
+cat("The test RMSE of A1 with P2 model is", as.numeric(test_rmse_p2))
 ```
 
 #### WX's part
-#### Step 3.1.2 RMSE for R1+R2
+#### Step 2.1.2 RMSE for R1+R2
 
 ```{r}
-# resultR12 <- gradesc.r12(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
-#                    data = data, train = data_train, test = data_test)
-# 
-# save(resultR12, file = "../output/mat_fac_r12.RData")
+resultR12 <- gradesc.r12(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 1, stopping.deriv = 0.01,
+                    data = data, train = data_train, test = data_test)
+ 
+ save(resultR12, file = "../output/mat_fac_r12.RData")
 ```
 
 
@@ -175,7 +175,7 @@ rmse_r12 <- RMSE2(data_test,pred_rating)
 cat("The RMSE of A1 with R1 R2 model is", rmse_r12)
 ```
 
-#### Step 3.1.3 RMSE for A1 + R1R3 + P2
+#### Step 2.1.3 RMSE for A1 + R1R3 + P2
 
 ```{r}
 # result_R1R3 <- gradesc.r3(f = 10, lambda = 0.1,lrate = 0.01, max.iter = 100, stopping.deriv = 0.01,
@@ -301,8 +301,11 @@ Test RMSE for A1 + R1R3 + P2 : 1.317491
 
 Linear regression results:
 
-Train RMSE:
-Test RMSE:
+Linear regression Train RMSE for A1 + R1R2 + P2 :
+Linear regression Test RMSE for A1 + R1R2 + P2 :
+
+Linear regression Train RMSE for A1 + R1R3 + P2 :
+Linear regression Test RMSE for A1 + R1R3 + P2 : 1.317491
 
 And the best parameters for all models is F = 10, lambda = 0.1 .
 After comparing all the results, we find  has the best performance.
